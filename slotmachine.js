@@ -43,3 +43,24 @@ const PAYLINES = [
 ];
 
 const INIT_POS = [0, 0, 0, 0, 0];
+const REELS = 5;
+const ROWS = 3;
+const SYMBOL_SIZE = 128;
+const REEL_GAP = 16;
+
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    async function start() {
+        const app = new PIXI.Application();
+        await app.init({ 
+            resizeTo: window,
+            backgroundColor: 0x1099bb,
+            resolution: window.devicePixelRatio || 1,
+            autoDensity: true,
+        });
+        document.body.appendChild(app.view);
+    }
+    start();
+    
+});
