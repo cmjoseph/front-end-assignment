@@ -4,15 +4,14 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Slot Machine</title>
-        <script src="https://pixijs.download/release/pixi.min.js"></script>
-        <script type="text/javascript" src="slotmachine.js"></script>
-        <style type="text/css">
-            body {
-                background-color: green;
-            }
+        <style>
+            html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: green; }
+            #game-container { width: 100vw; height: 100vh; }
         </style>
     </head>
     <body>
-        
+        <div id="game-container"></div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.2/browser/pixi.min.js" integrity="sha512-PSn5cMYVrLd/1XFNS8X3WCVIkOuD5vzyww0t9/65Nw0OD0WCYmYBuIkCERtObyVi2HCAIGnHOL+BvkBD4jUevw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script type="text/javascript" src="slotmachine.js"></script>
     </body>
 </html>

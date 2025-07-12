@@ -1,66 +1,87 @@
+const REEL_WIDTH = 100;
+const REEL_HEIGHT = 100;
+const REELS_COUNT = 5;
+const ROWS_COUNT = 3;
+
+const SYMBOLS = ['hv1', 'hv2', 'hv3', 'hv4', 'lv1', 'lv2', 'lv3', 'lv4'];
+
 const REEL_BANDS = [
-    ["hv2", "lv3", "lv3", "hv1", "hv1", "lv1", "hv1", "hv4", "lv1", "hv3", "hv2", "hv3", "lv4", "hv4", "lv1", "hv2", "lv4", "lv1", "lv3", "hv2"],
-    ["hv1", "lv2", "lv3", "lv2", "lv1", "lv1", "lv4", "lv1", "lv1", "hv4", "lv3", "hv2", "lv1", "lv3", "hv1", "lv1", "lv2", "lv4", "lv3", "lv2"],
-    ["lv1", "hv2", "lv3", "lv4", "hv3", "hv2", "lv2", "hv2", "hv2", "lv1", "hv3", "lv1", "hv1", "lv2", "hv3", "hv2", "hv4", "hv1", "lv2", "lv4"],
-    ["hv2", "lv2", "hv3", "lv2", "lv4", "lv4", "hv3", "lv2", "lv4", "hv1", "lv1", "hv1", "lv2", "hv3", "lv2", "lv3", "hv2", "lv1", "hv3", "lv2"],
-    ["lv3", "lv4", "hv2", "hv3", "hv4", "hv1", "hv3", "hv2", "hv2", "hv4", "hv4", "hv2", "lv2", "hv4", "hv1", "lv2", "hv1", "lv2", "hv4", "lv4"],
+    ['hv2', 'lv3', 'lv3', 'hv1', 'hv1', 'lv1', 'hv1', 'hv4', 'lv1', 'hv3', 'hv2', 'hv3', 'lv4', 'hv4', 'lv1', 'hv2', 'lv4', 'lv1', 'lv3', 'hv2'],
+    ['hv1', 'lv2', 'lv3', 'lv2', 'lv1', 'lv1', 'lv4', 'lv1', 'lv1', 'hv4', 'lv3', 'hv2', 'lv1', 'lv3', 'hv1', 'lv1', 'lv2', 'lv4', 'lv3', 'lv2'],
+    ['lv1', 'hv2', 'lv3', 'lv4', 'hv3', 'hv2', 'lv2', 'hv2', 'hv2', 'lv1', 'hv3', 'lv1', 'hv1', 'lv2', 'hv3', 'hv2', 'hv4', 'hv1', 'lv2', 'lv4'],
+    ['hv2', 'lv2', 'hv3', 'lv2', 'lv4', 'lv4', 'hv3', 'lv2', 'lv4', 'hv1', 'lv1', 'hv1', 'lv2', 'hv3', 'lv2', 'lv3', 'hv2', 'lv1', 'hv3', 'lv2'],
+    ['lv3', 'lv4', 'hv2', 'hv3', 'hv4', 'hv1', 'hv3', 'hv2', 'hv2', 'hv4', 'hv4', 'hv2', 'lv2', 'hv4', 'hv1', 'lv2', 'hv1', 'lv2', 'hv4', 'lv4']
 ];
 
-const SYMBOLS = ["hv1", "hv2", "hv3", "hv4", "lv1", "lv2", "lv3", "lv4"];
-
-const SYMBOL_IMAGES = {
-    hv1: "assets/hv1_symbol.png",
-    hv2: "assets/hv2_symbol.png",
-    hv3: "assets/hv3_symbol.png",
-    hv4: "assets/hv4_symbol.png",
-    lv1: "assets/lv1_symbol.png",
-    lv2: "assets/lv2_symbol.png",
-    lv3: "assets/lv3_symbol.png",
-    lv4: "assets/lv4_symbol.png",
-};
-
-const SPIN_BUTTON_IMAGE = "assets/spin_button.png";
-
 const PAYTABLE = {
-    hv1: [10, 20, 50],
-    hv2: [5, 10, 20],
-    hv3: [5, 10, 15],
-    hv4: [5, 10, 15],
-    lv1: [2, 5, 10],
-    lv2: [1, 2, 5],
-    lv3: [1, 2, 3],
-    lv4: [1, 2, 3],
+    'hv1': [10, 20, 50],
+    'hv2': [5, 10, 20],
+    'hv3': [5, 10, 15],
+    'hv4': [5, 10, 15],
+    'lv1': [2, 5, 10],
+    'lv2': [1, 2, 5],
+    'lv3': [1, 2, 3],
+    'lv4': [1, 2, 3]
 };
 
 const PAYLINES = [
     [0, 0, 0, 0, 0],
     [1, 1, 1, 1, 1],
     [2, 2, 2, 2, 2],
-    [0, 1, 2, 1, 0],
-    [2, 1, 0, 1, 2],
-    [0, 1, 1, 1, 0],
-    [2, 1, 1, 1, 2],
+    [1, 1, 2, 2, 2],
+    [2, 2, 1, 1, 1],
+    [1, 2, 1, 2, 1],
+    [2, 1, 2, 1, 2]
 ];
 
-const INIT_POS = [0, 0, 0, 0, 0];
-const REELS = 5;
-const ROWS = 3;
-const SYMBOL_SIZE = 128;
-const REEL_GAP = 16;
+const ASSETS = {
+    symbols: {
+        hv1: 'assets/hv1_symbol.png',
+        hv2: 'assets/hv2_symbol.png',
+        hv3: 'assets/hv3_symbol.png',
+        hv4: 'assets/hv4_symbol.png',
+        lv1: 'assets/lv1_symbol.png',
+        lv2: 'assets/lv2_symbol.png',
+        lv3: 'assets/lv3_symbol.png',
+        lv4: 'assets/lv4_symbol.png',
+    },
+    spinButton: 'assets/spin_button.png',
+};
 
-
-document.addEventListener('DOMContentLoaded', () => {
-
-    async function start() {
-        const app = new PIXI.Application();
-        await app.init({ 
-            resizeTo: window,
-            backgroundColor: 0x1099bb,
-            resolution: window.devicePixelRatio || 1,
-            autoDensity: true,
-        });
-        document.body.appendChild(app.view);
-    }
-    start();
-    
+// Init
+app = new PIXI.Application({
+    resizeTo: window,
+    backgroundColor: 0x1099bb,
+    resolution: window.devicePixelRatio || 1,
+    autoDensity: true,
 });
+document.getElementById("game-container").appendChild(app.view);
+
+// Preloader
+const loader = new PIXI.Loader();
+Object.values(ASSETS.symbols).forEach(url => loader.add(url));
+loader.add(ASSETS.spinButton);
+
+const loaderText = new PIXI.Text('Loading: 0%', {
+    fontFamily: 'Arial',
+    fontSize: 36,
+    fill: 0xffffff,
+    align: 'center'
+});
+loaderText.anchor.set(0.5);
+loaderText.x = app.screen.width / 2;
+loaderText.y = app.screen.height / 2;
+app.stage.addChild(loaderText);
+
+loader.onProgress.add((l) => {
+    loaderText.text = `Loading: ${Math.round(l.progress)}%`;
+    loaderText.x = app.screen.width / 2;
+    loaderText.y = app.screen.height / 2;
+});
+
+        
+
+    
+
+
+
