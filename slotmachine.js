@@ -49,7 +49,7 @@ const ASSETS = {
 };
 
 // Init
-app = new PIXI.Application({
+let app = new PIXI.Application({
     resizeTo: window,
     backgroundColor: 0x1099bb,
     resolution: window.devicePixelRatio || 1,
@@ -79,6 +79,58 @@ loader.onProgress.add((l) => {
     loaderText.y = app.screen.height / 2;
 });
 
+loader.load(setupGame);
+
+let gameContainer, reelsContainer, symbolsSprites, spinButton, winningsText;
+let currentPositions = [0, 0, 0, 0, 0];
+
+// Slot Machine
+function setupGame() {
+    app.stage.removeChild(loaderText);
+
+    gameContainer = new PIXI.Container();
+    app.stage.addChild(gameContainer);
+
+    reelsContainer = new PIXI.Container();
+    gameContainer.addChild(reelsContainer);
+
+    symbolsSprites = [];
+    for (let row = 0; row < ROWS_COUNT; row++) {
+        symbolsSprites[row] = [];
+        for (let col = 0; col < REELS_COUNT; col++) {
+            const symbolId = getSymbolAt(col, row, currentPositions[col]);
+            const tex = loader.resources[ASSETS.symbols[symbolId]].texture;
+            const sprite = new PIXI.Sprite(tex);
+            sprite.anchor.set(0.5);
+            reelsContainer.addChild(sprite);
+            symbolsSprites[row][col] = sprite;
+        }
+    }
+
+    spinButton = new PIXI.Sprite(loader.resources[ASSETS.spinButton].texture);
+    spinButton.anchor.set(0.5);
+    spinButton.interactive = true;
+    spinButton.buttonMode = true;
+    spinButton.on('pointerdown', onSpin);
+    gameContainer.addChild(spinButton);
+
+    winningsText = new PIXI.Text('', {
+        fontFamily: 'Arial',
+        fontSize: 32,
+        fill: 0xffff00,
+        align: 'center',
+        wordWrap: true,
+        wordWrapWidth: 600
+    });
+    winningsText.anchor.set(0.5, 0);
+    gameContainer.addChild(winningsText);
+}
+
+function getSymbolAt(reel, row, position) {
+    const band = REEL_BANDS[reel];
+    const bandPos = (position + row) % band.length;
+    return band[bandPos];
+}
         
 
     
