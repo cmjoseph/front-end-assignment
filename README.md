@@ -9,7 +9,8 @@ I added some elements to the assignment.
 - I added a minify version of the JS for performance.
 
 Note: 
-- I did this on a localhost server environnement (XAMPP v.3.3.0) to prevent CORS policy from blocking Sprite images.
+- Click on Spin button multiple times to see winnings.
+- I did this on a localhost server environnement (XAMPP v.3.3.0) to prevent CORS policy from blocking Sprite images. So use a web server please.
 - I used PIXI 6.5.2 since there was no specific version mention and also because we are using ES6.
 
 Thank you

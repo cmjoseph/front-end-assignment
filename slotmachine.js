@@ -27,13 +27,13 @@ const PAYTABLE = {
 };
 
 const PAYLINES = [
-    [0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1],
-    [2, 2, 2, 2, 2],
-    [1, 1, 2, 2, 2],
-    [2, 2, 1, 1, 1],
-    [1, 2, 1, 2, 1],
-    [2, 1, 2, 1, 2]
+    [1, 1, 1, 1, 1], // Payline 1
+    [0, 0, 0, 0, 0], // Payline 2
+    [2, 2, 2, 2, 2], // Payline 3
+    [0, 0, 1, 2, 2], // Payline 4
+    [2, 2, 1, 0, 0], // Payline 5
+    [0, 1, 2, 1, 0], // Payline 6
+    [2, 1, 0, 1, 2], // Payline 7
 ];
 
 const ASSETS = {
@@ -66,7 +66,7 @@ loader.add(ASSETS.spinButton);
 
 // Preloader background
 const loaderBackground = new PIXI.Graphics();
-loaderBackground.beginFill(0x1a1a1a); // Dark gray background
+loaderBackground.beginFill(0x1a1a1a);
 loaderBackground.drawRect(0, 0, app.screen.width, app.screen.height);
 loaderBackground.endFill();
 app.stage.addChild(loaderBackground);
@@ -108,6 +108,9 @@ loader.load(() => {
             loadedAssets++;
             setTimeout(simulateSlowLoad, delayPerAsset);
         } else {
+            if (app.stage.children.includes(loaderBackground)) {
+                app.stage.removeChild(loaderBackground);
+            }
             app.stage.removeChild(loaderText);
             setupGame();
         }
@@ -179,10 +182,7 @@ function setupGame() {
     gameContainer.addChild(winningsText);
 
     updateReels();
-    displayWinnings([]);
-
-    gameContainer.x = app.screen.width / 2;
-    gameContainer.y = app.screen.height / 2;
+    displayWinnings({});
 
     // Responsive
     window.addEventListener('resize', resizeGame);
@@ -219,7 +219,7 @@ function displayWinnings({ total = 0, results = [] }) {
     let text = `Total wins: ${total}`;
     if (results.length) {
         results.forEach(win => {
-            text += `\n- Payline ${win.payline}, ${win.symbol} x${win.count}, ${win.payout}`;
+            text += `\n- Payline ${win.payline + 1}, ${win.symbol} x${win.count}, Paytable Winnings ${win.payout}`;
         });
     }
     winningsText.text = text;
@@ -237,7 +237,7 @@ function displayWinnings({ total = 0, results = [] }) {
 
     // Color Yellow for winnings
     results.forEach(win => {
-        const payline = PAYLINES[win.payline - 1];
+        const payline = PAYLINES[win.payline];
         for (let i = 0; i < win.count; i++) {
             const row = payline[i];
             const col = i;
@@ -278,7 +278,7 @@ function calculateWinnings(screen) {
             const payout = PAYTABLE[first][matchCount - 3];
             total += payout;
             results.push({
-                payline: idx + 1,
+                payline: idx,
                 symbol: first,
                 count: matchCount,
                 payout
@@ -333,12 +333,6 @@ function resizeGame() {
     winningsText.y = reelsHeight + BUTTON_SIZE + 60;
 
     scaleWinningsText();
-}
-
-// Centering
-function centerDisplayObject(obj) {
-    obj.x = app.screen.width / 2;
-    obj.y = app.screen.height / 2;
 }
 
 // Responsive text
