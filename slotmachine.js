@@ -353,9 +353,3 @@ function scaleWinningsText() {
         winningsText.scale.set(maxHeight / winningsText.height);
     }
 }
-        
-
-    
-
-
-
