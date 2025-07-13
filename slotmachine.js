@@ -83,7 +83,7 @@ loader.onProgress.add((l) => {
 
 loader.load(setupGame);
 
-let gameContainer, reelsContainer, symbolsSprites, spinButton, winningsText;
+let gameContainer, reelsContainer, symbolsSprites, backgroundSprites, spinButton, winningsText;
 let currentPositions = [0, 0, 0, 0, 0];
 
 // Slot Machine
@@ -97,9 +97,19 @@ function setupGame() {
     gameContainer.addChild(reelsContainer);
 
     symbolsSprites = [];
+    backgroundSprites = [];
     for (let row = 0; row < ROWS_COUNT; row++) {
         symbolsSprites[row] = [];
+        backgroundSprites[row] = [];
         for (let col = 0; col < REELS_COUNT; col++) {
+            
+            const background = new PIXI.Graphics();
+            background.beginFill(0x000000, 0);
+            background.drawRect(-SPRITE_SIZE / 2, -SPRITE_SIZE / 2, SPRITE_SIZE, SPRITE_SIZE);
+            background.endFill();
+            reelsContainer.addChild(background);
+            backgroundSprites[row][col] = background;
+
             const symbolId = getSymbolAt(col, row, currentPositions[col]);
             const tex = loader.resources[ASSETS.symbols[symbolId]].texture;
             const sprite = new PIXI.Sprite(tex);
@@ -169,6 +179,27 @@ function displayWinnings({ total = 0, results = [] }) {
     }
     winningsText.text = text;
     scaleWinningsText();
+
+    for (let row = 0; row < ROWS_COUNT; row++) {
+        for (let col = 0; col < REELS_COUNT; col++) {
+            backgroundSprites[row][col].clear();
+            backgroundSprites[row][col].beginFill(0x000000, 0);
+            backgroundSprites[row][col].drawRect(-SPRITE_SIZE / 2, -SPRITE_SIZE / 2, SPRITE_SIZE, SPRITE_SIZE);
+            backgroundSprites[row][col].endFill();
+        }
+    }
+
+    results.forEach(win => {
+        const payline = PAYLINES[win.payline - 1];
+        for (let i = 0; i < win.count; i++) {
+            const row = payline[i];
+            const col = i;
+            backgroundSprites[row][col].clear();
+            backgroundSprites[row][col].beginFill(0xffff00, 1); // Yellow background for winners
+            backgroundSprites[row][col].drawRect(-SPRITE_SIZE / 2, -SPRITE_SIZE / 2, SPRITE_SIZE, SPRITE_SIZE);
+            backgroundSprites[row][col].endFill();
+        }
+    });
 }
 
 function updateReels() {
@@ -232,10 +263,14 @@ function resizeGame() {
     for (let row = 0; row < ROWS_COUNT; row++) {
         for (let col = 0; col < REELS_COUNT; col++) {
             const sprite = symbolsSprites[row][col];
+            const background = backgroundSprites[row][col];
             sprite.x = col * (SPRITE_SIZE + 20) + SPRITE_SIZE / 2;
             sprite.y = row * (SPRITE_SIZE + 20) + SPRITE_SIZE / 2;
             sprite.width = SPRITE_SIZE;
             sprite.height = SPRITE_SIZE;
+
+            background.x = sprite.x;
+            background.y = sprite.y;
         }
     }
 
