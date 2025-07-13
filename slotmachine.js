@@ -3,7 +3,7 @@ const REEL_HEIGHT = 100;
 const REELS_COUNT = 5;
 const ROWS_COUNT = 3;
 const SPRITE_SIZE = 150;
-const BUTTON_SIZE = 120;
+const BUTTON_SIZE = 140;
 
 const SYMBOLS = ['hv1', 'hv2', 'hv3', 'hv4', 'lv1', 'lv2', 'lv3', 'lv4'];
 
@@ -113,7 +113,6 @@ function setupGame() {
     spinButton.anchor.set(0.5);
     spinButton.interactive = true;
     spinButton.buttonMode = true;
-    spinButton.tint = 'red';     
     spinButton.on('pointerdown', onSpin);
     gameContainer.addChild(spinButton);
 
@@ -224,7 +223,7 @@ function resizeGame() {
     );
     gameContainer.scale.set(scale);
 
-    gameContainer.x = w / 2;
+    gameContainer.x = w / 2 - (reelsWidth * scale) / 2;
     gameContainer.y = h / 2 - (totalHeight * scale) / 2;
 
     reelsContainer.x = 0;
@@ -281,6 +280,7 @@ function showInitialScreen() {
     const wins = calculateWinnings(screen);
     displayWinnings(wins);
 }
+
 
         
 
