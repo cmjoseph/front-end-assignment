@@ -64,6 +64,13 @@ const loader = new PIXI.Loader();
 Object.values(ASSETS.symbols).forEach(url => loader.add(url));
 loader.add(ASSETS.spinButton);
 
+// Preloader background
+const loaderBackground = new PIXI.Graphics();
+loaderBackground.beginFill(0x1a1a1a); // Dark gray background
+loaderBackground.drawRect(0, 0, app.screen.width, app.screen.height);
+loaderBackground.endFill();
+app.stage.addChild(loaderBackground);
+
 const loaderText = new PIXI.Text('Loading: 0%', {
     fontFamily: 'Arial',
     fontSize: 36,
@@ -75,19 +82,51 @@ loaderText.x = app.screen.width / 2;
 loaderText.y = app.screen.height / 2;
 app.stage.addChild(loaderText);
 
+let progress = 0;
+const totalAssets = Object.keys(ASSETS.symbols).length + 1;
+const fakeProgressInterval = 300;
+const progressStep = 100 / totalAssets;
+
 loader.onProgress.add((l) => {
-    loaderText.text = `Loading: ${Math.round(l.progress)}%`;
+    progress = Math.min(progress + progressStep, l.progress);
+    loaderText.text = `Loading: 0%`;
     loaderText.x = app.screen.width / 2;
     loaderText.y = app.screen.height / 2;
 });
 
-loader.load(setupGame);
+// Simulate slower preload screen
+loader.load(() => {
+    const delayPerAsset = 300;
+    let loadedAssets = 0;
+
+    const simulateSlowLoad = () => {
+        if (loadedAssets < totalAssets) {
+            progress = (loadedAssets + 1) * progressStep;
+            loaderText.text = `Loading: ${Math.round(progress)}%`;
+            loaderText.x = app.screen.width / 2;
+            loaderText.y = app.screen.height / 2;
+            loadedAssets++;
+            setTimeout(simulateSlowLoad, delayPerAsset);
+        } else {
+            app.stage.removeChild(loaderText);
+            setupGame();
+        }
+    };
+
+    setTimeout(simulateSlowLoad, delayPerAsset);
+});
 
 let gameContainer, reelsContainer, symbolsSprites, backgroundSprites, spinButton, winningsText;
 let currentPositions = [0, 0, 0, 0, 0];
 
 // Slot Machine
 function setupGame() {
+    const loaderGame = new PIXI.Graphics();
+    loaderGame.beginFill(0x1099bb);
+    loaderGame.drawRect(0, 0, app.screen.width, app.screen.height);
+    loaderGame.endFill();
+    app.stage.addChild(loaderGame);
+
     app.stage.removeChild(loaderText);
 
     gameContainer = new PIXI.Container();
@@ -102,7 +141,7 @@ function setupGame() {
         symbolsSprites[row] = [];
         backgroundSprites[row] = [];
         for (let col = 0; col < REELS_COUNT; col++) {
-            
+
             const background = new PIXI.Graphics();
             background.beginFill(0x000000, 0);
             background.drawRect(-SPRITE_SIZE / 2, -SPRITE_SIZE / 2, SPRITE_SIZE, SPRITE_SIZE);
@@ -119,6 +158,7 @@ function setupGame() {
         }
     }
 
+    // Spinning Button
     spinButton = new PIXI.Sprite(loader.resources[ASSETS.spinButton].texture);
     spinButton.anchor.set(0.5);
     spinButton.interactive = true;
@@ -126,6 +166,7 @@ function setupGame() {
     spinButton.on('pointerdown', onSpin);
     gameContainer.addChild(spinButton);
 
+    // Winning Text
     winningsText = new PIXI.Text('', {
         fontFamily: 'Arial',
         fontSize: 32,
@@ -143,16 +184,19 @@ function setupGame() {
     gameContainer.x = app.screen.width / 2;
     gameContainer.y = app.screen.height / 2;
 
+    // Responsive
     window.addEventListener('resize', resizeGame);
     resizeGame();
 }
 
+// Symbol Position
 function getSymbolAt(reel, row, position) {
     const band = REEL_BANDS[reel];
     const bandPos = (position + row) % band.length;
     return band[bandPos];
 }
 
+// Spin Button Press
 function onSpin() {
     currentPositions = REEL_BANDS.map(band =>
         Math.floor(Math.random() * band.length)
@@ -170,6 +214,7 @@ function onSpin() {
     displayWinnings(wins);
 }
 
+// Show Winnings
 function displayWinnings({ total = 0, results = [] }) {
     let text = `Total wins: ${total}`;
     if (results.length) {
@@ -180,6 +225,7 @@ function displayWinnings({ total = 0, results = [] }) {
     winningsText.text = text;
     scaleWinningsText();
 
+    // Reset background colors
     for (let row = 0; row < ROWS_COUNT; row++) {
         for (let col = 0; col < REELS_COUNT; col++) {
             backgroundSprites[row][col].clear();
@@ -189,19 +235,21 @@ function displayWinnings({ total = 0, results = [] }) {
         }
     }
 
+    // Color Yellow for winnings
     results.forEach(win => {
         const payline = PAYLINES[win.payline - 1];
         for (let i = 0; i < win.count; i++) {
             const row = payline[i];
             const col = i;
             backgroundSprites[row][col].clear();
-            backgroundSprites[row][col].beginFill(0xffff00, 1); // Yellow background for winners
+            backgroundSprites[row][col].beginFill(0xffff00, 1);
             backgroundSprites[row][col].drawRect(-SPRITE_SIZE / 2, -SPRITE_SIZE / 2, SPRITE_SIZE, SPRITE_SIZE);
             backgroundSprites[row][col].endFill();
         }
     });
 }
 
+// Updates
 function updateReels() {
     for (let row = 0; row < ROWS_COUNT; row++) {
         for (let col = 0; col < REELS_COUNT; col++) {
@@ -212,6 +260,7 @@ function updateReels() {
     }
 }
 
+// Calculate Winning combinations
 function calculateWinnings(screen) {
     const results = [];
     let total = 0;
@@ -239,6 +288,7 @@ function calculateWinnings(screen) {
     return { total, results };
 }
 
+// Responsive layout
 function resizeGame() {
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -285,11 +335,13 @@ function resizeGame() {
     scaleWinningsText();
 }
 
+// Centering
 function centerDisplayObject(obj) {
     obj.x = app.screen.width / 2;
     obj.y = app.screen.height / 2;
 }
 
+// Responsive text
 function scaleWinningsText() {
     if (!winningsText) return;
     const maxWidth = REELS_COUNT * SPRITE_SIZE + (REELS_COUNT - 1) * 20;
@@ -301,22 +353,6 @@ function scaleWinningsText() {
         winningsText.scale.set(maxHeight / winningsText.height);
     }
 }
-
-function showInitialScreen() {
-    currentPositions = [0, 0, 0, 0, 0];
-    updateReels();
-    const screen = [];
-    for (let row = 0; row < ROWS_COUNT; row++) {
-        screen[row] = [];
-        for (let col = 0; col < REELS_COUNT; col++) {
-            screen[row][col] = getSymbolAt(col, row, currentPositions[col]);
-        }
-    }
-    const wins = calculateWinnings(screen);
-    displayWinnings(wins);
-}
-
-
         
 
     
